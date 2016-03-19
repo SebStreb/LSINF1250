@@ -7,4 +7,8 @@ public class main {
 		System.out.println("test");
 	}
 
+	public static float[] pagerank(int[][] adj, float alpha, float[] pers) {
+		return null;
+	}
+
 }
