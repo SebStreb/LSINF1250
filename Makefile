@@ -6,7 +6,7 @@ launch: main.class
 
 main.class: main.java
 	@echo "Compiling main"
-	@javac main.java
+	@javac -cp Jama-1.0.3.jar main.java
 
 clean:
 	@echo "Removing class files"

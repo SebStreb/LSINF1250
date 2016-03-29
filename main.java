@@ -1,11 +1,11 @@
 import Jama.*;
 /**
  * Write a description of class PageRank here.
- * 
- * @author (your name) 
+ *
+ * @author (your name)
  * @version (a version number or a date)
  */
-public class PageRank
+public class main
 {
     public static void main(String[] args){
         //TODO, tests
@@ -21,10 +21,10 @@ public class PageRank
         Matrix pers = new Matrix(q, 1);
         Matrix persT = pers.transpose();
         Matrix e = new Matrix(1, q.length,1);
-        Matrix eTimesPers = persT.times(e);       
+        Matrix eTimesPers = persT.times(e);
         Matrix G = adj.timesEquals(alpha).plus(eTimesPers.timesEquals(1-alpha)); //Fin du calcul de G
         Matrix x = new Matrix(1, G. getRowDimension(), 0);//Créons un vecteur ligne de base
-        x.set(0, 0, 1.0); 
+        x.set(0, 0, 1.0);
         Matrix result=rec(G, x, 50);
         //Algo
         //G = aplha*P + (1-aplha) pers^T*e et pas e*pers^T
@@ -56,7 +56,7 @@ public class PageRank
      * @ pre :  a est une matrice d'adjacence valide (carrée)
      * @ post : renvoie la version normalisée de a, c'est-à-dire avec chaque ligne
      *          divisiée par le degré du noeud qu'elle représente
-     *          
+     *
      *          [Remarque] La technique ligne par ligne ne donnait rien, j'ai changé par diviser chaque terme par N
      */
     public static double[][] normalize(double[][] a){
@@ -85,4 +85,4 @@ public class PageRank
             System.out.println("");
         }
     }
-}   
+}
