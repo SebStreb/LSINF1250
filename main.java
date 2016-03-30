@@ -27,23 +27,23 @@ public class main
     }
 
     /**
-     * Fonction qui lit un fichier contenant une matrice formatée et lance le calcul de pageRank sur celle-ci
-     */
+    * Fonction qui lit un fichier contenant une matrice formatée et lance le calcul de pageRank sur celle-ci
+    */
     public static void openFile(String filename) throws IOException {
-        BufferedReader bf = new BufferedReader(new FileReader(filename));//Initialisations des variables pour la lecture
+        BufferedReader bf = new BufferedReader(new FileReader(filename)); //Initialisations des variables pour la lecture
         String line = bf.readLine();
-        String[] tmp = line.split(",");//On sépare la chaine sur ',' pour obtenir toutes les valeurs
+        String[] tmp = line.split(","); //On sépare la chaine sur ',' pour obtenir toutes les valeurs
         int l = tmp.length;
         double[][] mat = new double[l][l];
-        for (int y = 0; y < l; y++) {//Boucle for pour la première ligne déjà lue à l'initialisation
+        for (int y = 0; y < l; y++) { //Boucle for pour la première ligne déjà lue à l'initialisation
             try {
-                mat[0][y] = Double.parseDouble(tmp[y]);//On essaye de lire un nombre et de l'insérer
-            } catch (NumberFormatException e) {//S'il est mal encodé, remplacer par un 0 et le signaler
+                mat[0][y] = Double.parseDouble(tmp[y]); //On essaye de lire un nombre et de l'insérer
+            } catch (NumberFormatException e) { //S'il est mal encodé, remplacer par un 0 et le signaler
                 System.err.println("Nombre à l'index (0," + y + ") mal encodé. Remplaçé par un 0.");
                 mat[0][y] = 0;
             }
         }
-        for (int x = 1; x < l; x++) {//Boucle for pour le reste de la matrice
+        for (int x = 1; x < l; x++) { //Boucle for pour le reste de la matrice
             line = bf.readLine();
             tmp = line.split(",");
             for (int y = 0; y < l; y++) {
@@ -56,28 +56,28 @@ public class main
             }
         }
         double[] q = new double[l];
-        for (int x = 0; x < l; x++) {//On crée le vecteur de personnalisation, par défaut rempli de 1
+        for (int x = 0; x < l; x++) { //On crée le vecteur de personnalisation, par défaut rempli de 1
             q[x] = 1;
         }
         bf.close();//fermer le buffer
-        double[] ranked = pageRank(mat, 1, q);//Lancement du calcul de pageRank
-        print(ranked);//Affichage du résultat
-        classement(ranked);//Affichage du classement
+        double[] ranked = pageRank(mat, 1, q); //Lancement du calcul de pageRank
+        print(ranked); //Affichage du résultat
+        classement(ranked); //Affichage du classement
     }
 
     public static double[] pageRank(double[][] adj, double alpha, double[] pers) {
         normalize(adj); //Normalisation
-        Matrix p = new Matrix(adj); //Créations des matrices à envoyer à la fonction récusive
-        Matrix v = (new Matrix(pers, 1)).transpose(); //vecteur de personalisation
+        Matrix p = new Matrix(adj); //Création des matrices à envoyer à la fonction récusive
+        Matrix v = (new Matrix(pers, 1)).transpose(); //Vecteur de personalisation
         Matrix x = new Matrix(p.getRowDimension(), 1, 1); //Vecteur de résultat en t=0
         Matrix result = rec(x, alpha, p, v, false, 0); //Calcul du résultat en t=1000
-        return result.getRowPackedCopy(); //renvoie un vecteur colonne
+        return result.getRowPackedCopy(); //Renvoie un vecteur colonne
     }
 
     /**
-     * Fonction récursive pour calculer le pagerank
-     * x(t+1)^T = apha * x(t)^T * P + (1-aplha)*pers^T
-     */
+    * Fonction récursive pour calculer le pagerank
+    * x(t+1)^T = apha * x(t)^T * P + (1-aplha)*pers^T
+    */
     public static Matrix rec(Matrix x, double alpha, Matrix p, Matrix v, boolean flag, int count){
         if (flag || count > 5000) { //Fin de la récursion
             System.out.println("Il y a eu " + count + " récursions");
@@ -91,31 +91,31 @@ public class main
             Matrix right = vT.times(minAplh);
             Matrix nXt = left.plus(right);
             flag=converge(x, nXt.transpose());
-            return rec(nXt.transpose(), alpha, p, v, flag, count+1);
+            return rec(nXt.transpose(), alpha, p, v, flag, count+1); //Récursion
         }
     }
 
     /**
-     * Fonction qui vérifie si les deux matrices convergent, return true si elles sont égale, false sinon
-     * @ pre : a et b sont deux matrices ligne valides et de même tailles
-     * @ post : renvoie true si les valeurs de a et b convergent, false sinon
-     */
+    * Fonction qui vérifie si les deux matrices convergent, return true si elles sont égale, false sinon
+    * @ pre : a et b sont deux matrices ligne valides et de même tailles
+    * @ post : renvoie true si les valeurs de a et b convergent, false sinon
+    */
     public static boolean converge(Matrix a, Matrix b){
-        double[] xA = a.getRowPackedCopy();//Récupérer les deux matrices
+        double[] xA = a.getRowPackedCopy(); //Récupérer les deux matrices
         double[] xB = b.getRowPackedCopy();
         for(int i=0; i<xA.length; i++){
-            if(xB[i]-xA[i]>0.0001)//Si on trouve deux valeurs avec plus de 0.0001 d'écart, les valeurs ne convergent pas, renvoyer false
+            if(xB[i]-xA[i]>0.0001) //Si on trouve deux valeurs avec plus de 0.0001 d'écart, les valeurs ne convergent pas, renvoyer false
                 return false;
         }
-        return true;//Si on est sorti de la boucle, les valeurs convergent
+        return true; //Si on est sorti de la boucle, les valeurs convergent
     }
 
     /**
-     * @ pre : a est une matrice d'adjacence valide (carrée)
-     * @ post : renvoie la version normalisée de a, c'est-à-dire avec chaque ligne
-     *          divisiée par le degré du noeud qu'elle représente
-     *          Si la ligne valait 0, chaque valeur est remplacée par 1/N où N vaut le nombre de noeud du graphe (téléportation possible)
-     */
+    * @ pre : a est une matrice d'adjacence valide (carrée)
+    * @ post : renvoie la version normalisée de a, c'est-à-dire avec chaque ligne
+    *          divisiée par le degré du noeud qu'elle représente
+    *          Si la ligne valait 0, chaque valeur est remplacée par 1/N où N vaut le nombre de noeud du graphe (téléportation possible)
+    */
     public static double[][] normalize(double[][] a) {
         double count;
         double[] vector = new double[a.length];
@@ -130,8 +130,7 @@ public class main
             for (int j = 0; j < a[0].length; j++) {
                 if (vector[i] != 0) {
                     a[i][j] = a[i][j] / vector[i]; //Normaliser en divisant
-                }
-                else {
+                } else {
                     a[i][j] = 1.0 / a.length;
                 }
             }
@@ -140,30 +139,30 @@ public class main
     }
 
     /**
-     * Classe les valeurs du vecteur par ordre croissant
-     * @ pre : un tableau de double
-     * @ post : Affiche sur la sortie standard les indices du vecteur par ordre croissant
-     */
+    * Classe les valeurs du vecteur par ordre croissant
+    * @ pre : un tableau de double
+    * @ post : Affiche sur la sortie standard les indices du vecteur par ordre croissant
+    */
     public static void classement(double[] a) {
         System.out.print("\tClassement :");
         for (int i = 0; i < a.length; i++) {
-            int imax = maxIndice(a);//Chercher l'indice de la valeur maximum
-            System.out.print(" " + (imax+1) + " ");//Afficher le résultat
-            a[imax] = Double.MIN_VALUE;//Stocker la valeur minimale dans la case pour ne plus qu'elle soit choisie
+            int imax = maxIndice(a); //Chercher l'indice de la valeur maximum
+            System.out.print(" " + (imax+1) + " "); //Afficher le résultat
+            a[imax] = Double.MIN_VALUE; //Stocker la valeur minimale dans la case pour ne plus qu'elle soit choisie
         }
         System.out.println();
     }
-    
+
     /**
-     * Retourne l'indice de la valeur maximum contenue dans un tableau de double
-     */
+    * Retourne l'indice de la valeur maximum contenue dans un tableau de double
+    */
     public static int maxIndice(double[] a) {
-        double max = Double.MIN_VALUE;//Initialisation
+        double max = Double.MIN_VALUE; //Initialisation
         int imax = 0;
         for (int i = 0; i < a.length; i++) {
-            if (a[i] > max) {//Si la valeur de cette case est meilleure que celle qu'on a actuellement
-                imax = i;//Stocker l'indice
-                max = a[i];//Stocker la valeur
+            if (a[i] > max) { //Si la valeur de cette case est meilleure que celle qu'on a actuellement
+                imax = i; //Stocker l'indice
+                max = a[i]; //Stocker la valeur
             }
         }
         return imax;
