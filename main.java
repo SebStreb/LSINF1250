@@ -1,13 +1,65 @@
 import Jama.*;
+import java.io.*;
+import java.util.*;
 
 public class main
 {
     public static void main(String[] args) {
-        //TODO, tests
-        double[][] a = {{0, 1, 1, 0, 0, 0}, {0, 0, 0, 0, 0, 0}, {1, 0, 1, 0, 1, 0}, {0, 0, 0, 0, 1, 1},{0, 0, 0, 1, 0, 1}, {0, 0, 0, 1, 0, 0}};
-        double[] q = {1, 1, 1, 1, 1, 1};
-        double[] finish = pageRank(a, 0.85, q);
-        print(finish);
+        System.out.println("Bienvenue dans ce programme de calcul PageRank!");
+        switch (args.length) {
+            case 0:
+                System.out.println("Il n'y a pas de fichier à lire.");
+                break;
+            case 1:
+                System.out.println("Il y a un fichier à lire.");
+                break;
+            default:
+                System.out.println("Il y a " + args.length + " fichiers à lire.");
+        }
+        for (int i = 0; i < args.length; i++) {
+            try {
+                System.out.println("Fichier n°" + (i+1));
+                openFile(args[i]);
+            } catch (IOException e) {
+                System.err.println("Error in file : " + args[i]);
+            }
+        }
+    }
+
+    public static void openFile(String filename) throws IOException {
+        BufferedReader bf = new BufferedReader(new FileReader(filename));
+        String line = bf.readLine();
+        String[] tmp = line.split(",");
+        int l = tmp.length;
+        double[][] mat = new double[l][l];
+        for (int y = 0; y < l; y++) {
+            try {
+                mat[0][y] = Double.parseDouble(tmp[y]);
+            } catch (NumberFormatException e) {
+                System.err.println("Nombre à l'index (0," + y + ") mal encodé. Remplaçé par un 0.");
+                mat[0][y] = 0;
+            }
+        }
+        for (int x = 1; x < l; x++) {
+            line = bf.readLine();
+            tmp = line.split(",");
+            for (int y = 0; y < l; y++) {
+                try {
+                    mat[x][y] = Double.parseDouble(tmp[y]);
+                } catch (NumberFormatException e) {
+                    System.err.println("Nombre à l'index (" + x + "," + y + ") mal encodé. Remplaçé par un 0.");
+                    mat[x][y] = 0;
+                }
+            }
+        }
+        double[] q = new double[l];
+        for (int x = 0; x < l; x++) {
+            q[x] = 1;
+        }
+        bf.close();
+        double[] ranked = pageRank(mat, 0.85, q);
+        print(ranked);
+        classement(ranked);
     }
 
     public static double[] pageRank(double[][] adj, double alpha, double[] pers) {
@@ -85,12 +137,34 @@ public class main
         return a;
     }
 
+    public static void classement(double[] a) {
+        System.out.print("\tClassement :");
+        for (int i = 0; i < a.length; i++) {
+            int imax = maxIndice(a);
+            System.out.print(" " + imax + " ");
+            a[imax] = 0;
+        }
+        System.out.println();
+    }
+
+    public static int maxIndice(double[] a) {
+        double max = 0;
+        int imax = 0;
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] > max) {
+                imax = i;
+                max = a[i];
+            }
+        }
+        return imax;
+    }
+
     /**
     * Affiche la repréentation d'un vecteur (en colonne)
     */
     public static void print(double[] a) {
         for (int i = 0; i < a.length; i++) {
-            System.out.println(a[i]);
+            System.out.println("\tNœud n°" + (i+1) + " : " + a[i]);
         }
     }
 

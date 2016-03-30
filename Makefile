@@ -2,7 +2,7 @@ all: launch clean
 
 launch: main.class
 	@echo "Launching main"
-	@java main
+	@java main Bott.csv
 
 main.class: main.java
 	@echo "Compiling main"
