@@ -57,7 +57,7 @@ public class main
             q[x] = 1;
         }
         bf.close();
-        double[] ranked = pageRank(mat, 0.85, q);
+        double[] ranked = pageRank(mat, 1, q);
         print(ranked);
         classement(ranked);
     }
@@ -66,8 +66,8 @@ public class main
         normalize(adj); //Normalisation
         Matrix p = new Matrix(adj); //Créations des matrices à envoyer à la fonction récusive
         Matrix v = (new Matrix(pers, 1)).transpose(); //vecteur de personalisation
-        Matrix x = new Matrix(p.getRowDimension(), 1, 0); //Vecteur de résultat en t=0
-        Matrix result = rec(x, alpha, p, v, 1000); //Calcul du résultat en t=1000
+        Matrix x = new Matrix(p.getRowDimension(), 1, 1); //Vecteur de résultat en t=0
+        Matrix result = rec(x, alpha, p, v, false, 0); //Calcul du résultat en t=1000
         return result.getRowPackedCopy(); //renvoie un vecteur colonne
     }
 
@@ -75,10 +75,11 @@ public class main
      * Fonction récursive pour calculer le pagerank
      * x(t+1)^T = apha * x(t)^T * P + (1-aplha)*pers^T
      */
-    public static Matrix rec(Matrix x, double alpha, Matrix p, Matrix v, int stop){
-        if (stop == 0) //Fin de la récursion
+    public static Matrix rec(Matrix x, double alpha, Matrix p, Matrix v, boolean flag, int count){
+        if (flag || count > 5000) { //Fin de la récursion
+            System.out.println("Il y a eu " + count + " récursions");
             return x;
-        else {
+        } else {
             Matrix xT = x.transpose(); //Calcul mathématique de l'algorithme
             Matrix vT = v.transpose();
             double minAplh = (1-alpha);
@@ -86,8 +87,22 @@ public class main
             Matrix left = xT.times(temp);
             Matrix right = vT.times(minAplh);
             Matrix nXt = left.plus(right);
-            return rec(nXt.transpose(), alpha, p, v, stop-1); //Récursion
+            flag=converge(x, nXt.transpose());
+            return rec(nXt.transpose(), alpha, p, v, flag, count+1);
         }
+    }
+
+    /**
+     * Fonction qui vérifie si les deux matrices convergent, return true si elles sont égale, false sinon
+     */
+    public static boolean converge(Matrix a, Matrix b){
+        double[] xA = a.getRowPackedCopy();
+        double[] xB = b.getRowPackedCopy();
+        for(int i=0; i<xA.length; i++){
+            if(xB[i]-xA[i]>0.0001)
+                return false;
+        }
+        return true;
     }
 
     /**
@@ -141,14 +156,14 @@ public class main
         System.out.print("\tClassement :");
         for (int i = 0; i < a.length; i++) {
             int imax = maxIndice(a);
-            System.out.print(" " + imax + " ");
-            a[imax] = 0;
+            System.out.print(" " + (imax+1) + " ");
+            a[imax] = Double.MIN_VALUE;;
         }
         System.out.println();
     }
 
     public static int maxIndice(double[] a) {
-        double max = 0;
+        double max = Double.MIN_VALUE;
         int imax = 0;
         for (int i = 0; i < a.length; i++) {
             if (a[i] > max) {
