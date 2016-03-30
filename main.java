@@ -18,8 +18,8 @@ public class main
     public static double[][] pageRank(double[][]adj, double alpha, double[] pers) {
         normalize(adj);//Normalisation
         Matrix p = new Matrix(adj); //Créations des matrices à envoyer à la fonction récusive
-        Matrix v = new Matrix(pers, 1);//vecteur de personalisation
-        Matrix x = new Matrix(1, p.getRowDimension(), 0);//Verteur de résultat en t=0
+        Matrix v = (new Matrix(pers, 1)).transpose();//vecteur de personalisation
+        Matrix x = new Matrix(p.getRowDimension(), 1, 0);//Verteur de résultat en t=0
         //x.set(0, 0, 0.5);
         Matrix result=rec(alpha, x, p, v, 1000);
         //Algo
@@ -41,7 +41,7 @@ public class main
             Matrix vT = v.transpose();
             double minAplh = (1-alpha);
             Matrix temp = p.times(alpha);
-            Matrix left = temp.times(xT);
+            Matrix left = xT.times(temp);
             Matrix right = vT.times(minAplh);
             Matrix nXt = left.plus(right);
             return rec(alpha, nXt.transpose(), p, v, stop-1);
