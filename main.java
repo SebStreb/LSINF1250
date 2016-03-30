@@ -1,8 +1,8 @@
 import Jama.*;
 /**
  * Write a description of class PageRank here.
- * 
- * @author (your name) 
+ *
+ * @author (your name)
  * @version (a version number or a date)
  */
 public class main
@@ -15,14 +15,13 @@ public class main
         print(finish);
     }
 
-    public static double[][] pageRank(double[][]a, double alpha,double[] q){
-        normalize(a);//Normalisation
-        Matrix adj = new Matrix(a); //Créations des matrices à envoyer à la fonction récusive
-        Matrix pers = new Matrix(q, 1);//vecteur de personalisation
-        Matrix e = new Matrix(q.length, 1, 1);//Matrice de 1
-        Matrix x = new Matrix(adj.getRowDimension(), 1, 0);//Verteur de résultat en t=0
-        x.set(0, 0, 0.5); 
-        Matrix result=rec(alpha, x, adj, e, pers, 6);
+    public static double[][] pageRank(double[][]adj, double alpha, double[] pers) {
+        normalize(adj);//Normalisation
+        Matrix p = new Matrix(adj); //Créations des matrices à envoyer à la fonction récusive
+        Matrix v = new Matrix(pers, 1);//vecteur de personalisation
+        Matrix x = new Matrix(1, p.getRowDimension(), 0);//Verteur de résultat en t=0
+        //x.set(0, 0, 0.5);
+        Matrix result=rec(alpha, x, p, v, 1000);
         //Algo
         //G = aplha*P + (1-aplha) pers^T*e et pas e*pers^T
         //x(t+1)^T = x^T*G
@@ -34,15 +33,18 @@ public class main
     /**
      * Fonction récursive pour calculer le pagerank
      */
-    public static Matrix rec(double alpha, Matrix x, Matrix adj, Matrix ones, Matrix pers, int stop){
+    public static Matrix rec(double alpha, Matrix x, Matrix p, Matrix v, int stop){
         if(stop==0)
             return x;
         else{
-            Matrix xT = x.transpose();        
-            Matrix eTimesPers = ones.times(pers);       
-            Matrix G = adj.timesEquals(alpha).plus(eTimesPers.timesEquals(1-alpha));
-            xT=xT.times(G);
-            return rec(alpha, xT.transpose(), adj, ones, pers, stop-1);
+            Matrix xT = x.transpose();
+            Matrix vT = v.transpose();
+            double minAplh = (1-alpha);
+            Matrix temp = p.times(alpha);
+            Matrix left = temp.times(xT);
+            Matrix right = vT.times(minAplh);
+            Matrix nXt = left.plus(right);
+            return rec(alpha, nXt.transpose(), p, v, stop-1);
         }
     }
 
@@ -89,4 +91,4 @@ public class main
             System.out.println("");
         }
     }
-}   
+}
