@@ -71,7 +71,7 @@ public class main
         Matrix v = (new Matrix(pers, 1)).transpose(); //Vecteur de personalisation
         Matrix x = new Matrix(p.getRowDimension(), 1, 1); //Vecteur de résultat en t=0
         Matrix result = rec(x, alpha, p, v, false, 0); //Calcul du résultat en t=1000
-        return result.getRowPackedCopy(); //Renvoie un vecteur colonne
+        return normalize(result.getRowPackedCopy()); //Renvoie un vecteur colonne
     }
 
     /**
@@ -108,6 +108,24 @@ public class main
                 return false;
         }
         return true; //Si on est sorti de la boucle, les valeurs convergent
+    }
+
+    /**
+    * @ pre : a est un vecteur valide
+    * @ post : renvoie la version normalisée de a, c'est-à-dire que la somme
+    *          des éléments du vecteur renvoyée est égale à 1
+    */
+    public static double[] normalize(double[] a) {
+        double count = 0;
+        for (int i = 0; i < a.length; i++)
+            count += a[i];
+        for (int i = 0; i < a.length; i++) {
+            if (count != 0)
+                a[i] = a[i] / count;
+            else
+                a[i] = 1.0 / a.length;
+        }
+        return a;
     }
 
     /**
