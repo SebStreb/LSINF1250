@@ -35,16 +35,7 @@ public class main
         String[] tmp = line.split(","); //On sépare la chaine sur ',' pour obtenir toutes les valeurs
         int l = tmp.length;
         double[][] mat = new double[l][l];
-        for (int y = 0; y < l; y++) { //Boucle for pour la première ligne déjà lue à l'initialisation
-            try {
-                mat[0][y] = Double.parseDouble(tmp[y]); //On essaye de lire un nombre et de l'insérer
-            } catch (NumberFormatException e) { //S'il est mal encodé, remplacer par un 0 et le signaler
-                System.err.println("Nombre à l'index (0," + y + ") mal encodé. Remplaçé par un 0.");
-                mat[0][y] = 0;
-            }
-        }
-        for (int x = 1; x < l; x++) { //Boucle for pour le reste de la matrice
-            line = bf.readLine();
+        for (int x = 0; x < l; x++) { //Boucle for pour le reste de la matrice
             tmp = line.split(",");
             for (int y = 0; y < l; y++) {
                 try {
@@ -54,12 +45,13 @@ public class main
                     mat[x][y] = 0;
                 }
             }
+            line = bf.readLine();
         }
+        bf.close(); //fermer le buffer
         double[] q = new double[l];
         for (int x = 0; x < l; x++) { //On crée le vecteur de personnalisation, par défaut rempli de 1
             q[x] = 1;
         }
-        bf.close();//fermer le buffer
         double[] ranked = pageRank(mat, 1, q); //Lancement du calcul de pageRank
         print(ranked); //Affichage du résultat
         classement(ranked); //Affichage du classement
@@ -70,7 +62,7 @@ public class main
         Matrix p = new Matrix(adj); //Création des matrices à envoyer à la fonction récusive
         Matrix v = (new Matrix(pers, 1)).transpose(); //Vecteur de personalisation
         Matrix x = new Matrix(p.getRowDimension(), 1, 1); //Vecteur de résultat en t=0
-        Matrix result = rec(x, alpha, p, v, false, 0); //Calcul du résultat en t=1000
+        Matrix result = rec(x, alpha, p, v, false, 0); //Calcul du résultat final
         return normalize(result.getRowPackedCopy()); //Renvoie un vecteur colonne
     }
 
