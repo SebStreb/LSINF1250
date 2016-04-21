@@ -35,7 +35,7 @@ public class main
         String[] tmp = line.split(","); //On sépare la chaine sur ',' pour obtenir toutes les valeurs
         int l = tmp.length;
         double[][] mat = new double[l][l];
-        for (int x = 0; x < l; x++) { //Boucle for pour le reste de la matrice
+        for (int x = 0; x < l; x++) { //Remplis le tableau
             tmp = line.split(",");
             for (int y = 0; y < l; y++) {
                 try {
@@ -63,7 +63,7 @@ public class main
         Matrix v = (new Matrix(pers, 1)).transpose(); //Vecteur de personalisation
         Matrix x = new Matrix(p.getRowDimension(), 1, 1); //Vecteur de résultat en t=0
         Matrix result = rec(x, alpha, p, v, false, 0); //Calcul du résultat final
-        return normalize(result.getRowPackedCopy()); //Renvoie un vecteur colonne
+        return result.getRowPackedCopy(); //Renvoie un vecteur colonne
     }
 
     /**
@@ -71,7 +71,7 @@ public class main
     * x(t+1)^T = apha * x(t)^T * P + (1-aplha)*pers^T
     */
     public static Matrix rec(Matrix x, double alpha, Matrix p, Matrix v, boolean flag, int count){
-        if (flag || count > 5000) { //Fin de la récursion
+        if ((flag && count > 10) || count > 5000) { //Fin de la récursion
             System.out.println("Il y a eu " + count + " récursions");
             return x;
         } else {
@@ -82,7 +82,10 @@ public class main
             Matrix left = xT.times(temp);
             Matrix right = vT.times(minAplh);
             Matrix nXt = left.plus(right);
-            flag=converge(x, nXt.transpose());
+            double[] vecXt = nXt.getRowPackedCopy(); //Normalisation du résultat
+            vecXt = normalize(vecXt);
+            nXt = (new Matrix(vecXt, 1));
+            flag=converge(x, nXt.transpose()); //Vérification de la convergence
             return rec(nXt.transpose(), alpha, p, v, flag, count+1); //Récursion
         }
     }
@@ -183,7 +186,7 @@ public class main
     */
     public static void print(double[] a) {
         for (int i = 0; i < a.length; i++) {
-            System.out.println("\tNœud n°" + (i+1) + " : " + a[i]);
+            System.out.println("\t\\item " + "$" + a[i] + "$");
         }
     }
 
