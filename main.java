@@ -85,7 +85,7 @@ public class main
             double[] vecXt = nXt.getRowPackedCopy(); //Normalisation du résultat
             vecXt = normalize(vecXt);
             nXt = (new Matrix(vecXt, 1));
-            flag=converge(x, nXt.transpose()); //Vérification de la convergence
+            flag = converge(x, nXt.transpose()); //Vérification de la convergence
             return rec(nXt.transpose(), alpha, p, v, flag, count+1); //Récursion
         }
     }
@@ -135,7 +135,7 @@ public class main
         for (int i = 0; i < a.length; i++) {
             count = 0;
             for (int j = 0; j < a[0].length; j++) {
-                count += a[i][j]; //Pour chaque colonne, compter le degré du noeud qu'elle représente
+                count += a[i][j]; //Pour chaque ligne, compter le degré du noeud qu'elle représente
             }
             vector[i] = count; //Stocker dans un vecteur
         }
@@ -186,7 +186,7 @@ public class main
     */
     public static void print(double[] a) {
         for (int i = 0; i < a.length; i++) {
-            System.out.println("\t\\item " + "$" + a[i] + "$");
+            System.out.println("\tNœud n°" + i + " : " + a[i]);
         }
     }
 
