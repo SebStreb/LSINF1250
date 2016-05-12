@@ -49,7 +49,7 @@ public class main
         }
         bf.close(); //fermer le buffer
         double[] q = new double[l];
-        for (int x = 0; x < l; x++) { //On crée le vecteur de personnalisation, par défaut rempli de 1
+        for (int x = 0; x < l; x++) { //On crée le vecteur de personnalisation , par défaut rempli de 1
             q[x] = 1;
         }
         double[] ranked = pageRank(mat, 1, q); //Lancement du calcul de pageRank
@@ -186,7 +186,7 @@ public class main
     */
     public static void print(double[] a) {
         for (int i = 0; i < a.length; i++) {
-            System.out.println("\tNœud n°" + i + " : " + a[i]);
+            System.out.println("\tNœud n°" + (i+1) + " : " + a[i]);
         }
     }
 
